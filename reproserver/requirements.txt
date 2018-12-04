@@ -1,0 +1,8 @@
+boto3~=1.4
+enum34
+pika~=0.10
+psycopg2~=2.7
+requests~=2.13
+dj-database-url==0.3.0
+Django==2.1.2
+django-environ==0.4.5

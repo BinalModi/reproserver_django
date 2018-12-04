@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for experiment in experiments %}
+
+  <h1>Experiment: {{ experiment.hash }}</h1>
+
+  <p>Status: {{ experiment.status }}</p>
+
+  <p>Image: {{ experiment.docker_image }}</p>
+
+  {% for upload in experiment.uploads %}
+
+  <p>Uploaded by {{ upload.submitted_ip }} at {{ upload.timestamp }}
+  as <a href="{{ url_for_upload(upload) }}">{{ upload.filename }}</a>
+  {% if upload.provider_key %} ({{ upload.provider_key}}){% endif %}</p>
+
+  {% endfor %}
+
+  {% for parameter in experiment.parameters %}
+
+  <p>Parameter: {{ parameter.name }}
+  ({% if parameter.optional %}optional{% else %}required{% endif %}): {{ parameter.description }}</p>
+
+  {% endfor %}
+
+  {% for path in experiment.paths %}
+
+  <p>Path: {% if path.is_input and path.is_output %}input and output{% elif path.is_input %}input{% else %}output{% endif %} {{ path.name }}, {{ path.path }}</p>
+
+  {% endfor %}
+
+  {% for run in experiment.runs %}
+
+  <h2><a href="{{ url_for('results', run_short_id=run.short_id) }}">Run {{ run.id }}</a> submitted at {{ run.submitted }}</h2>
+
+  <p>Started: {{ run.started }}<br/>
+  Done: {{ run.done }}</p>
+
+    {% for param_value in run.parameter_values %}
+
+    <p>Param: {{ param_value.name }} = {{ param_value.value }}</p>
+
+    {% endfor %}
+
+    {% for file in run.input_files %}
+
+    <p>Input: {{ file.name }}: {{ file.hash }}, {{ file.size }} bytes</p>
+
+    {% endfor %}
+
+    {% for file in run.output_files %}
+
+    <p>Output: {{ file.name }}: {{ file.hash }}, {{ file.size }} bytes</p>
+
+    {% endfor %}
+
+  {% endfor %}
+
+{% endfor %}
+
+{% endblock content %}
