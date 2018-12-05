@@ -1,0 +1,3 @@
+[submodule "reproserver/builder/reprozip"]
+	path = reproserver/builder/reprozip
+	url = https://github.com/ViDA-NYU/reprozip.git
