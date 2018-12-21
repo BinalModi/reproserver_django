@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 COPY requirements.txt /usr/src/app
 RUN pip install -r requirements.txt
 COPY web /usr/src/app/web
-COPY common/ /usr/src/app/
+COPY common /usr/src/app/common
 COPY entrypoint.sh /usr/src/app/
 COPY manage.py /usr/src/app/
 COPY reproserver /usr/src/app/reproserver

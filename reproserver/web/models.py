@@ -55,7 +55,8 @@ class Upload(models.Model):
     This is not used by the application, but might be important for accounting
     purposes.
     """
-    filename = models.TextField(primary_key=True)
+    
+    filename = models.TextField()
     experiment_hash = models.ForeignKey(Experiment,unique='True', on_delete=models.CASCADE,related_name="+")
     
     experiment = models.OneToOneField('Experiment', on_delete= models.CASCADE)

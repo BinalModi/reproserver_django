@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from web.providers import ProviderError, get_experiment_from_provider
+from web.models import *
 from common import TaskQueues, get_object_store
 import functools
 from hashlib import sha256
@@ -124,15 +125,18 @@ def unpack(session):
     return redirect(url_for('reproduce_local',upload_short_id=upload_short_id), 302)
 
 
-def reproduce_provider(session,provider, provider_path):
+def reproduce_provider(session, provider, provider_path):
     """Reproduce an experiment from a data repository (provider).
         """
     # Check the database for an experiment already stored matching the URI
     provider_key = '%s/%s' % (provider, provider_path)
-    upload = (session.query(database.Upload)
-              .options(joinedload(database.Upload.experiment))
-              .filter(database.Upload.provider_key == provider_key)
-              .order_by(database.Upload.id.desc())).first()
+                
+    # Get the first row returned
+    query = Upload.objects.filter(provider_key=provider_key).order_by('id')
+    upload = query[0]
+    print(upload)
+    
+    
     if not upload:
         try:
             upload = get_experiment_from_provider(session, request.remote_addr,provider, provider_path)

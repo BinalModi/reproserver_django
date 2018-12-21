@@ -10,7 +10,7 @@ RUN pip install \
     -e /usr/src/app/reprozip/reprounzip-docker
 COPY builder/requirements.txt /usr/src/app
 RUN pip install -r requirements.txt
-COPY builder/builder /usr/src/app/builder
+COPY builder/builder /usr/src/app/builders
 COPY common/ /usr/src/app/
 RUN mkdir /usr/src/app/home && \
     useradd -d /usr/src/app/home -s /usr/sbin/nologin appuser && \
