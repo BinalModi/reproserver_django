@@ -22,4 +22,6 @@ urlpatterns = [
     path('about', views.about, name='about'),
     path('unpack', views.unpack, name = 'unpack' ),
     path('reproduce/<provider>/<provider_path>', views.reproduce_provider, name = 'reproduce_provider'),
+    path('start_run/<upload_short_id>', views.start_run, name = 'start_run'),
+    path('reproduce_local/<upload_short_id>', views.reproduce_local, name = 'reproduce_local'),
 ]

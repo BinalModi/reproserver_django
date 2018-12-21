@@ -1,20 +1,13 @@
 version: '3'
 services:
-  web:
-    image: reproserver-web
-    build:
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - rabbitmq
-    env_file:
-      - ".env"
-    command: ["debug"]
-    volumes:
-      - ./web/static:/usr/src/app/static
-      - ./web:/usr/src/app/web
+  postgres:
+    image: postgres:9.6
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: ${ADMIN_USER}
+      POSTGRES_PASSWORD: ${ADMIN_PASSWORD}
     ports:
-      - 8000:8000
+      - 5432:5432
   builder:
     image: reproserver-builder
     build:
@@ -65,11 +58,18 @@ services:
     image: registry:2.6
     ports:
       - 5000:5000
-  postgres:
-    image: postgres:9.6
-    environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_USER: ${ADMIN_USER}
-      POSTGRES_PASSWORD: ${ADMIN_PASSWORD}
+  web:
+    image: reproserver-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ".env"
+    command: ["server"]
+    volumes:
+      - ./web/static:/usr/src/app/static
+      - ./web:/usr/src/app/web
     ports:
-      - 5432:5432
+      - 8000:8000

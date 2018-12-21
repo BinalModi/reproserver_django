@@ -8,8 +8,8 @@ import environ
 #
 
 class TaskQueues(object):
-    #def __init__(self):
-    #self._connect()
+    def __init__(self):
+        self._connect()
     
     def _connect(self):
         logging.info("Connecting to AMQP broker")

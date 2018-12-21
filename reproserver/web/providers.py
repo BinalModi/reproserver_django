@@ -1,5 +1,6 @@
 from common import get_object_store
 from hashlib import sha256
+from web.models import *
 import logging
 import os
 import re
@@ -14,20 +15,21 @@ class ProviderError(Exception):
     pass
 
 
-def get_experiment_from_provider(session, remote_addr,
+def get_experiment_from_provider(request, remote_addr,
                                  provider, provider_path):
     try:
         getter = _PROVIDERS[provider]
     except KeyError:
         raise ProviderError("No such provider %s" % provider)
-    return getter(session, remote_addr, provider, provider_path)
+    return getter(request, remote_addr, provider, provider_path)
 
 
-def _get_from_link(session, remote_addr, provider, provider_path,
+def _get_from_link(request, remote_addr, provider, provider_path,
                    link, filename, filehash=None):
     # Check for existence of experiment
     if filehash is not None:
-        experiment = session.query(database.Experiment).get(filehash)
+            experiment = Experiment.objects.filter(hash = filehash)
+            print(experiment)
     else:
         experiment = None
     if experiment:
@@ -48,30 +50,37 @@ def _get_from_link(session, remote_addr, provider, provider_path,
             filehash = hasher.hexdigest()
 
             # Check for existence of experiment
-            experiment = session.query(database.Experiment).get(filehash)
+            experiment = Experiment.objects.filter(hash = filehash)
+            
             if experiment:
                 logging.info("File exists")
             else:
                 # Insert it on S3
-                object_store = get_object_store()
-                object_store.upload_file('experiments', filehash,
-                                         local_path)
+                # object_store = get_object_store()
+                # object_store.upload_file('experiments', filehash,
+                #                          local_path)
                 logging.info("Inserted file in storage")
 
                 # Insert it in database
-                experiment = database.Experiment(hash=filehash)
-                session.add(experiment)
+                experiment = Experiment()
+                experiment.hash = filehash
+                experiment.save()
+
+                # Experiment.get(hash=filehash)
+                # request.session['Experiment'] = experiment
         finally:
             os.close(fd)
             os.remove(local_path)
 
     # Insert Upload in database
-    upload = database.Upload(experiment=experiment,
-                             filename=filename,
-                             submitted_ip=remote_addr,
-                             provider_key='%s/%s' % (provider, provider_path))
-    session.add(upload)
-    session.commit()
+    upload = Upload()
+    upload.experiment_hash=experiment
+    upload.filename=filename
+    upload.submitted_ip=remote_addr
+    upload.provider_key='{}/{}'.format(provider, provider_path)
+    upload.save()
+
+    # request.session['Upload'] = upload
 
     return upload
 

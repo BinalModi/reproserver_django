@@ -59,7 +59,7 @@ class Upload(models.Model):
     filename = models.TextField()
     experiment_hash = models.ForeignKey(Experiment,unique='True', on_delete=models.CASCADE,related_name="+")
     
-    experiment = models.OneToOneField('Experiment', on_delete= models.CASCADE)
+    # experiment = models.OneToOneField('Experiment', on_delete= models.CASCADE)
     #back_populates='uploads')
     submitted_ip = models.TextField(null=True)
     provider_key = models.TextField(null=True, db_index=True)
@@ -68,7 +68,8 @@ class Upload(models.Model):
 
     @property
     def short_id(self):
-        return short_ids.encode('upload', self.id)
+        short_ids = MultiShortIDs(os.environ['SHORTIDS_SALT'])
+        return short_ids.encode('uploads', self.id)
 
     def __repr__(self):
         return ("<Upload id=%d, experiment_hash=%r, filename=%r, "
@@ -88,7 +89,7 @@ class Parameter(models.Model):
     """
 
     experiment_hash = models.ForeignKey(Experiment, on_delete=models.CASCADE,related_name="+")
-    experiment = models.OneToOneField('Experiment', models.CASCADE)
+    # experiment = models.OneToOneField('Experiment', models.CASCADE)
     
     name = models.TextField(null=False)
     description = models.TextField()
@@ -110,7 +111,7 @@ class Path(models.Model):
     """
 
     experiment_hash = models.ForeignKey(Experiment, on_delete=models.CASCADE,related_name="+")
-    experiment = models.OneToOneField('Experiment', models.CASCADE)
+    # experiment = models.OneToOneField('Experiment', models.CASCADE)
                               
     is_input = models.BooleanField()
     is_output = models.BooleanField()
@@ -141,7 +142,7 @@ class Run(models.Model):
     """
 
     experiment_hash = models.ForeignKey(Experiment, on_delete=models.CASCADE,related_name="+")
-    experiment = models.OneToOneField('Experiment',models.CASCADE)
+    # experiment = models.OneToOneField('Experiment',models.CASCADE)
     
     upload_id = models.ForeignKey(Upload,on_delete=models.PROTECT,related_name="+")
     upload_Run = models.OneToOneField('Upload',models.CASCADE)
@@ -185,7 +186,7 @@ class BuildLogLine(models.Model):
     """
 
     experiment_hash = models.ForeignKey(Experiment, on_delete=models.CASCADE,related_name="+")
-    experiment = models.OneToOneField('Experiment',models.CASCADE)
+    # experiment = models.OneToOneField('Experiment',models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now())
     
     line = models.TextField()
